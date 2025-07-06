@@ -1,6 +1,6 @@
 {
   "name": "vue-a4",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Beautiful A4 pages for Vue",
   "keywords": ["pagedjs", "pagedjs on vue", "a4 pages on vue", "html to a4 pages"],
   "type": "module",

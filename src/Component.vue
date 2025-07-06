@@ -30,37 +30,53 @@ export default defineComponent({
   setup() {
     const containerEl = ref<any>(null);
     const innerEl = ref<any>(null);
+    const observer = ref<any>(null);
     const containerWidth = ref<number|null>(null);
+    const innerHeight = ref<number|null>(null);
 
-    return { containerEl, innerEl, containerWidth };
-  },
-
-  created() {
-    this.useResize();
-    this.updContainerSize();
+    return {
+      containerEl,
+      innerEl,
+      observer,
+      containerWidth,
+      innerHeight,
+    };
   },
 
   mounted() {
-    this.updContainerSize();
+    this.useObserver();
+    this.updSize();
+    this.updInnerSize();
   },
 
   updated() {
-    this.updContainerSize();
+    this.updSize();
+    this.updInnerSize();
   },
 
   beforeUnmount() {
-    this.remResize();
+    this.remObserver();
   },
 
   methods: {
-    useResize() {
-      window.addEventListener('resize', this.updContainerSize.bind(this));
+    useObserver() {
+      this.observer = new ResizeObserver(() => {
+        this.updSize();
+        this.updInnerSize();
+      });
+
+      this.observer?.observe(this.containerEl, this.innerEl);
     },
-    remResize() {
-      window.removeEventListener('resize', this.updContainerSize);
+    remObserver() {
+      this.observer?.unobserve(this.containerEl, this.innerEl);
     },
-    updContainerSize() {
-      this.containerWidth = this.containerEl?.offsetWidth ?? null;
+    updSize() {
+      const containerRect = this.containerEl?.getBoundingClientRect() ?? null;
+      this.containerWidth = containerRect?.width ?? null;
+    },
+    updInnerSize() {
+      const innerRect = this.innerEl?.getBoundingClientRect() ?? null;
+      this.innerHeight = innerRect?.height ?? null;
     },
   },
 
@@ -73,9 +89,15 @@ export default defineComponent({
       else
         return null;
     },
+    style(): Obj | null {
+      if (this.innerHeight)
+        return { height: this.innerHeight + 'px' };
+      else
+        return null;
+    },
     innerStyle(): Obj | null {
       if (this.innerScale)
-        return { transform: `scale(${this.innerScale})` };
+        return { width: 0, transform: `scale(${this.innerScale})` };
       else
         return null;
     },
@@ -85,7 +107,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="vue_a4" ref="containerEl" :data-theme="Number(!noTheme)">
+  <div class="vue_a4" :style="style" :data-theme="Number(!noTheme)" ref="containerEl">
     <div class="vue_a4_inner" :style="innerStyle" ref="innerEl">
       <Paged>
         <slot />
