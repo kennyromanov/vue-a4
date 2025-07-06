@@ -1,0 +1,27 @@
+@import "tailwindcss" source(".");
+
+.vue_a4 {
+    --vuea4-pages-gap: 8px;
+
+    &[data-theme="1"] {
+        .pagedjs_pages {
+            transform: translateZ(0);
+            filter:
+                drop-shadow(0 4px 10px rgba(0, 0, 0, 0.1));
+        }
+
+        .pagedjs_page {
+            background: white;
+        }
+    }
+
+    .vue_a4_inner {
+        transform-origin: top left;
+    }
+
+    .pagedjs_page {
+        &:not([data-page-number="1"]) {
+            margin-top: var(--vuea4-pages-gap);
+        }
+    }
+}
